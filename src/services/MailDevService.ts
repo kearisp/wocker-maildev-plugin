@@ -27,7 +27,8 @@ export class MailDevService {
                 image: this.imageName,
                 restart: "always",
                 env: {
-                    VIRTUAL_HOST: this.containerName
+                    VIRTUAL_HOST: this.containerName,
+                    VIRTUAL_PORT: "80"
                 },
                 ports: [
                     "25:25"
@@ -36,9 +37,15 @@ export class MailDevService {
 
             await container.start();
         }
+
+        console.info(`Maildev started at ${this.containerName}`);
     }
 
     public async build(rebuild?: boolean): Promise<void> {
+        if(rebuild) {
+            await this.dockerService.imageRm(this.imageName);
+        }
+
         if(!await this.dockerService.imageExists(this.imageName)) {
             await this.dockerService.buildImage({
                 tag: this.imageName,
