@@ -1,6 +1,7 @@
 import {
     Controller,
-    Command
+    Command,
+    Option
 } from "@wocker/core";
 
 import {MailDevService} from "../services/MailDevService";
@@ -13,8 +14,21 @@ export class MailDevController {
     ) {}
 
     @Command("maildev:start")
-    public async start(): Promise<void> {
-        await this.mailDevService.start();
+    public async start(
+        @Option("restart", {
+            type: "boolean",
+            alias: "r",
+            description: "Restart maildev"
+        })
+        restart?: boolean,
+        @Option("build", {
+            type: "boolean",
+            alias: "b",
+            description: "Build image"
+        })
+        rebuild?: boolean
+    ): Promise<void> {
+        await this.mailDevService.start(restart, rebuild);
     }
 
     @Command("maildev:stop")
