@@ -14,13 +14,17 @@ export class MailDevService {
         protected readonly dockerService: DockerService
     ) {}
 
-    public async start(): Promise<void> {
+    public async start(restart?: boolean, rebuild?: boolean): Promise<void> {
         console.info("MailDev starting...");
+
+        if(restart) {
+            await this.dockerService.removeContainer(this.containerName);
+        }
 
         let container = await this.dockerService.getContainer(this.containerName);
 
         if(!container) {
-            await this.build();
+            await this.build(rebuild);
 
             container = await this.dockerService.createContainer({
                 name: this.containerName,
